@@ -16,10 +16,6 @@ namespace MonsterEditor::Core
 
 	void Module::shutdownModule()
 	{
-		using namespace MonsterEngine;
-
-		Renderer::RHI::Registry::Destroy();
-		WindowManager::WindowManager::Destroy();
 	}
 
 	void Module::run()
@@ -31,6 +27,7 @@ namespace MonsterEditor::Core
 		if (!m_RHI)
 			throw std::runtime_error("RHI 'Metal' could not be found!");
 		m_Instance = m_RHI->newInstance();
+		m_Device   = m_Instance->findDevice();
 
 		auto& windowManager = WindowManager::WindowManager::Get();
 		m_Window            = windowManager.createWindow(1280, 720, "MonsterEditor");

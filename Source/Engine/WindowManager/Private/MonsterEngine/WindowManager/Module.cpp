@@ -1,5 +1,6 @@
 #include "MonsterEngine/WindowManager/Module.h"
 #include "MonsterEngine/WindowManager/ModuleVersion.h"
+#include "MonsterEngine/WindowManager/WindowManager.h"
 
 #include <Module.h>
 
@@ -14,6 +15,7 @@ namespace MonsterEngine::WindowManager
 
 	void Module::shutdownModule()
 	{
+		WindowManager::Destroy();
 	}
 } // namespace MonsterEngine::WindowManager
 

@@ -7,6 +7,6 @@ namespace MonsterEngine::Renderer::Metal
 
 	MetalDevice::~MetalDevice()
 	{
-		
+		m_Device->release();
 	}
 } // namespace MonsterEngine::Renderer::Metal

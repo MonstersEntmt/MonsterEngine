@@ -321,7 +321,7 @@ namespace MonsterEngine::ModuleManager
 		moduleExitpointFunc  = reinterpret_cast<ModuleExitpointFunc>(GetProcAddress(static_cast<HMODULE>(library), "gModuleExitpoint"));
 #elif BUILD_IS_SYSTEM_MACOSX || BUILD_IS_SYSTEM_LINUX
 		library = dlopen(pathStr.c_str(), RTLD_NOW);
-		if (!libray)
+		if (!library)
 		{
 			// TODO(MarcasRealAccount): Give error message if library could not be loaded.
 			return nullptr;

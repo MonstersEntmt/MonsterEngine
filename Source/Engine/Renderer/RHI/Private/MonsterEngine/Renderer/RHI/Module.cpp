@@ -1,12 +1,13 @@
 #include "MonsterEngine/Renderer/RHI/Module.h"
 #include "MonsterEngine/Renderer/RHI/ModuleVersion.h"
+#include "MonsterEngine/Renderer/RHI/Registry.h"
 
 #include <Module.h>
 
 namespace MonsterEngine::Renderer::RHI
 {
 	Module::Module()
-		: IMonsterModule(GetVersion()) {}
+	    : IMonsterModule(GetVersion()) {}
 
 	void Module::startupModule()
 	{
@@ -14,6 +15,7 @@ namespace MonsterEngine::Renderer::RHI
 
 	void Module::shutdownModule()
 	{
+		Registry::Destroy();
 	}
 } // namespace MonsterEngine::Renderer::RHI
 

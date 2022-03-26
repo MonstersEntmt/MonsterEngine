@@ -2,13 +2,13 @@ files({
 	CurrentModule.ModulePath .. "/glfw/include/**",
 	CurrentModule.ModulePath .. "/glfw/src/context.c",
 	CurrentModule.ModulePath .. "/glfw/src/init.c",
-	CurrentModule.ModulePath .. "/glfw/src/input.c",
 	CurrentModule.ModulePath .. "/glfw/src/internal.h",
+	CurrentModule.ModulePath .. "/glfw/src/input.c",
 	CurrentModule.ModulePath .. "/glfw/src/mappings.h",
 	CurrentModule.ModulePath .. "/glfw/src/monitor.c",
 	CurrentModule.ModulePath .. "/glfw/src/null_*",
-	CurrentModule.ModulePath .. "/glfw/src/platform.h",
 	CurrentModule.ModulePath .. "/glfw/src/platform.c",
+	CurrentModule.ModulePath .. "/glfw/src/platform.h",
 	CurrentModule.ModulePath .. "/glfw/src/vulkan.c",
 	CurrentModule.ModulePath .. "/glfw/src/window.c",
 	CurrentModule.ModulePath .. "/glfw/src/egl_*",
@@ -46,8 +46,10 @@ filter("system:macosx")
 		CurrentModule.ModulePath .. "/glfw/src/posix_*"
 	})
 	removefiles({
-		CurrentModule.ModulePath .. "/glfw/src/posix_time.h",
-		CurrentModule.ModulePath .. "/glfw/src/posix_time.c"
+		CurrentModule.ModulePath .. "/glfw/src/posix_poll.c",
+		CurrentModule.ModulePath .. "/glfw/src/posix_poll.h",
+		CurrentModule.ModulePath .. "/glfw/src/posix_time.c",
+		CurrentModule.ModulePath .. "/glfw/src/posix_time.h"
 	})
 
 	defines({ "_GLFW_COCOA" })

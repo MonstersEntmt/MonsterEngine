@@ -8,6 +8,7 @@ namespace MonsterEngine::Renderer::Metal
 
 	bool MetalRHI::isCompatible()
 	{
+		return true;
 	}
 
 	std::unique_ptr<RHI::IInstance> MetalRHI::newInstance()

@@ -501,11 +501,15 @@ function PremakeUtils:SetupModule(module)
 	end
 
 		filter("system:windows")
-			prebuildcommands({ "\"" .. _PREMAKE_COMMAND .. "\" prebuild \"--file=%{wks.location}\\premake5.lua\" \"--module=" .. module:GetModuleID() .. "\" \"--moduleout=%{cfg.buildtarget.relpath}\"" })
-			postbuildcommands({ "\"" .. _PREMAKE_COMMAND .. "\" postbuild \"--file=%{wks.location}\\premake5.lua\" \"--module=" .. module:GetModuleID() .. "\" \"--moduleout=%{cfg.buildtarget.relpath}\"" })
+	if module.Json.PreBuildScriptPath then
+			prebuildcommands({ "\"" .. _PREMAKE_COMMAND .. "\" prebuild \"--file=%{!wks.location}\\premake5.lua\" \"--module=" .. module:GetModuleID() .. "\" \"--moduleout=%{!cfg.buildtarget.abspath}\"" })
+	end
+			postbuildcommands({ "\"" .. _PREMAKE_COMMAND .. "\" postbuild \"--file=%{!wks.location}\\premake5.lua\" \"--module=" .. module:GetModuleID() .. "\" \"--moduleout=%{!cfg.buildtarget.abspath}\"" })
 		filter("system:not windows")
-			prebuildcommands({ "'" .. _PREMAKE_COMMAND .. "' prebuild '--file=%{wks.location}/premake5.lua' '--module=" .. module:GetModuleID() .. "' '--moduleout=%{cfg.buildtarget.relpath}'" })
-			postbuildcommands({ "'" .. _PREMAKE_COMMAND .. "' postbuild '--file=%{wks.location}/premake5.lua' '--module=" .. module:GetModuleID() .. "' '--moduleout=%{cfg.buildtarget.relpath}'" })
+    if module.Json.PreBuildScriptPath then
+			prebuildcommands({ "'" .. _PREMAKE_COMMAND .. "' prebuild '--file=%{!wks.location}/premake5.lua' '--module=" .. module:GetModuleID() .. "' '--moduleout=%{!cfg.buildtarget.abspath}'" })
+	end
+   			postbuildcommands({ "'" .. _PREMAKE_COMMAND .. "' postbuild '--file=%{!wks.location}/premake5.lua' '--module=" .. module:GetModuleID() .. "' '--moduleout=%{!cfg.buildtarget.abspath}'" })
 		filter({})
 
 	if module.Json.Type ~= "StaticLibrary" and module.Json.Type ~= "SharedLibrary" then
