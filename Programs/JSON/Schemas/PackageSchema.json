@@ -1,0 +1,21 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema",
+	"description": "Package schema",
+	"id": "packageSchema",
+	"properties": {
+		"Name": {
+			"description": "Name of this package",
+			"default": "Package",
+			"type": "string"
+		},
+		"SetupScriptPath": {
+			"description": "Path to setup script",
+			"default": "Setup.lua",
+			"type": "string"
+		}
+	},
+	"required": [ "Name" ],
+	"title": "Package Schema",
+	"type": "object",
+	"version": "1.0.0"
+}

@@ -1,0 +1,4 @@
+[2022-03-26 00:17:15.306] [MonsterEngine] [trace] Loaded module 'MonsterEngine.Core' version 0.1.0
+[2022-03-26 00:17:15.353] [MonsterEngine] [trace] Loaded module 'MonsterEngine.WindowManager' version 0.1.0
+[2022-03-26 00:17:15.376] [MonsterEngine] [trace] Loaded module 'MonsterEditor.Core' version 0.1.0
+[2022-03-26 00:17:20.224] [MonsterEngine] [trace] Created window 'MonsterEditor' at 1280x720

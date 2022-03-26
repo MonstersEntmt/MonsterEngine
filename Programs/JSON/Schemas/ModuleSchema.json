@@ -1,0 +1,98 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema",
+	"description": "Module schema",
+	"id": "moduleSchema",
+	"properties": {
+		"Name": {
+			"description": "Name of this module",
+			"default": "Module",
+			"type": "string"
+		},
+		"Type": {
+			"description": "Type of this module",
+			"default": "Module",
+			"enum": [
+				"Module",
+				"Executable",
+				"ModuleManager",
+				"SharedLibrary",
+				"StaticLibrary"
+			],
+			"type": "string"
+		},
+		"PublicDir": {
+			"description": "Path to the public directory of this module",
+			"default": "Public/",
+			"type": "string"
+		},
+		"PrivateDir": {
+			"description": "Path to the private directory of this module",
+			"default": "Private/",
+			"type": "string"
+		},
+		"Version": {
+			"description": "Current version of this module",
+			"default": [ 0, 0, 0 ],
+			"items": {
+				"type": "number"
+			},
+			"type": "array",
+			"minItems": 3,
+			"maxItems": 3
+		},
+		"Dependencies": {
+			"description": "List of modules this module depends on",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"type": "array",
+			"uniqueItems": true
+		},
+		"PCH": {
+			"description": "PCH information for this module",
+			"default": {
+				"Header": "pch.h",
+				"Source": "pch.cpp"
+			},
+			"properties": {
+				"Header": {
+					"description": "Path to PCH header file inside PrivateDir",
+					"default": "pch.h",
+					"type": "string"
+				},
+				"Source": {
+					"description": "Path to PCH source file inside PrivateDir",
+					"default": "pch.cpp",
+					"type": "string"
+				}
+			},
+			"required": [ "Header", "Source" ],
+			"type": "object"
+		},
+		"PreBuildScriptPath": {
+			"description": "Path to pre-build script",
+			"default": "PreBuild.lua",
+			"type": "string"
+		},
+		"PostBuildScriptPath": {
+			"description": "Path to post-build script",
+			"default": "PostBuild.lua",
+			"type": "string"
+		},
+		"SetupScriptPath": {
+			"description": "Path to setup script",
+			"default": "Setup.lua",
+			"type": "string"
+		},
+		"SetupDepScriptPath": {
+			"description": "Path to dependency setup script",
+			"default": "SetupDep.lua",
+			"type": "string"
+		}
+	},
+	"required": [ "Name", "Type", "PublicDir", "PrivateDir", "Version" ],
+	"title": "Module Schema",
+	"type": "object",
+	"version": "1.0.0"
+}

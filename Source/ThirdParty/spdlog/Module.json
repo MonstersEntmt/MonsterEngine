@@ -1,0 +1,11 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
+	"Name": "spdlog",
+	"Type": "StaticLibrary",
+	"PublicDir": "spdlog/include/",
+	"PrivateDir": "spdlog/src/",
+	"Version": [ 0, 1, 0 ],
+	"SetupScriptPath": "Setup.lua",
+	"SetupDepScriptPath": "SetupDep.lua",
+	"Dependencies": []
+}

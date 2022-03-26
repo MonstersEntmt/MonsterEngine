@@ -1,0 +1,11 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
+	"Name": "glfw",
+	"Type": "StaticLibrary",
+	"PublicDir": "glfw/include/",
+	"PrivateDir": "glfw/src/",
+	"Version": [ 0, 1, 0 ],
+	"SetupScriptPath": "Setup.lua",
+	"SetupDepScriptPath": "SetupDep.lua",
+	"Dependencies": []
+}

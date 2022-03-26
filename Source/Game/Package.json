@@ -1,0 +1,4 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/PackageSchema.json",
+	"Name": "MonsterGame"
+}

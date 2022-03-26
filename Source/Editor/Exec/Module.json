@@ -1,0 +1,9 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
+	"Name": "Exec",
+	"Type": "Executable",
+	"PublicDir": "Public/",
+	"PrivateDir": "Private/",
+	"Version": [ 0, 1, 0 ],
+	"Dependencies": [ "MonsterEngine.Core", "MonsterEditor.Core" ]
+}

@@ -1,0 +1,9 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
+	"Name": "ModuleManager",
+	"Type": "ModuleManager",
+	"PublicDir": "Public/",
+	"PrivateDir": "Private/",
+	"Version": [ 0, 1, 0 ],
+	"Dependencies": [ "ThirdParty.spdlog" ]
+}
