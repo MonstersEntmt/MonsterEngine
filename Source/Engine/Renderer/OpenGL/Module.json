@@ -1,0 +1,9 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
+	"Name": "Renderer.OpenGL",
+	"Type": "Module",
+	"PublicDir": "Public/",
+	"PrivateDir": "Private/",
+	"Version": [ 0, 1, 0 ],
+	"Dependencies": [ "MonsterEngine.Core", "MonsterEngine.WindowManager", "MonsterEngine.Renderer.RHI" ]
+}

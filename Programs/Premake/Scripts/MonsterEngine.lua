@@ -354,6 +354,7 @@ function PremakeUtils:SetupWorkspace()
 	verbosef("PremakeUtils:SetupWorkspace()")
 	configurations({ "Debug", "Release", "Dist" })
 	platforms(self.TargetArchs)
+	debugdir("%{wks.location}/Temp/")
 
 	for _, v in ipairs(self.TargetArchs) do
 		filter("platforms:" .. v)

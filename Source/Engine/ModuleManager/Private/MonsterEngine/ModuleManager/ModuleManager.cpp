@@ -61,7 +61,8 @@ namespace MonsterEngine::ModuleManager
 
 		std::unordered_map<std::string, Version> dependencies;
 
-		auto& dependenciesIni = dependenciesSection->getIni();
+		std::vector<std::uint32_t> versionArr;
+		auto&                      dependenciesIni = dependenciesSection->getIni();
 		for (auto& entry : dependenciesIni)
 		{
 			if (entry->getName() == "MonsterEngine.ModuleManager")
@@ -73,7 +74,6 @@ namespace MonsterEngine::ModuleManager
 
 			Version actualVersion = getModuleVersion(entryPath);
 
-			std::vector<std::uint32_t> versionArr;
 			if (!entry->tryGetValueOfType(versionArr) || versionArr.size() < 3)
 				continue;
 
@@ -94,7 +94,21 @@ namespace MonsterEngine::ModuleManager
 		auto module = loadModuleAtPath(modulePath);
 		if (!module)
 			throw ModuleLoadException("Requested module: \"" + std::string(name) + "\" was loaded incorrectly!");
-		auto version = module->m_Module->getVersion();
+
+		if (!ini["Version"]->tryGetValueOfType(versionArr) || versionArr.size() < 3)
+		{
+			unloadModuleFromInfo(*module);
+			throw ModuleLoadException("Invalid module: \"" + std::string(name) + "\" version missing from ini file!");
+		}
+
+		module->m_Version = { versionArr[0], versionArr[1], versionArr[2] };
+		auto version      = module->m_Module->getVersion();
+		if (module->m_Version != version)
+		{
+			unloadModuleFromInfo(*module);
+			throw ModuleLoadException("Invalid module: \"" + std::string(name) + "\" ini version not the same as the built version!");
+		}
+
 		Logger::Trace("Loaded module '{}' version {}.{}.{}", name, version.m_Major, version.m_Minor, version.m_Patch);
 		module->m_Module->startupModule();
 		return module->m_Module;
@@ -110,6 +124,56 @@ namespace MonsterEngine::ModuleManager
 	{
 		auto itr = m_Modules.find(name);
 		return itr != m_Modules.end() ? itr->second.m_Module : nullptr;
+	}
+
+	std::unordered_map<std::string, ModuleManager::ModuleInfo>& ModuleManager::getAvailableModules()
+	{
+		m_AvailableModules.clear();
+
+		for (auto& searchDir : m_SearchDirs)
+		{
+			for (auto& pathItr : std::filesystem::recursive_directory_iterator(searchDir))
+			{
+				if (!pathItr.is_regular_file())
+					continue;
+
+				auto& path = pathItr.path();
+#if BUILD_IS_SYSTEM_WINDOWS
+				if (path.extension() != ".dll")
+					continue;
+#elif BUILD_IS_SYSTEM_LINUX
+				if (path.extension() != ".so")
+					continue;
+#elif BUILD_IS_SYSTEM_MACOSX
+				if (path.extension() != ".dylib")
+					continue;
+#endif
+
+				auto filename = path.filename();
+				filename.replace_extension("");
+#if BUILD_IS_SYSTEM_MACOSX || BUILD_IS_SYSTEM_LINUX
+				filename.replace_filename(filename.u8string().substr(3));
+#endif
+
+				auto configFilepath = path;
+				configFilepath.replace_extension(".ini");
+				if (std::filesystem::exists(configFilepath))
+				{
+					Serializer::Ini ini;
+					if (!Serializer::readFileNoexcept(configFilepath, ini))
+						continue;
+
+					std::vector<std::uint32_t> versionArr;
+					if (!ini["Version"]->tryGetValueOfType(versionArr) || versionArr.size() < 3)
+						continue;
+
+					auto& moduleInfo     = m_AvailableModules.insert({ filename.string(), {} }).first->second;
+					moduleInfo.m_Version = { versionArr[0], versionArr[1], versionArr[2] };
+				}
+			}
+		}
+
+		return m_AvailableModules;
 	}
 
 	void ModuleManager::addSearchDir(const std::filesystem::path& searchDir)
@@ -276,8 +340,7 @@ namespace MonsterEngine::ModuleManager
 #if BUILD_IS_SYSTEM_MACOSX || BUILD_IS_SYSTEM_LINUX
 		filename.replace_filename(filename.u8string().substr(3));
 #endif
-		auto  itr             = m_Modules.insert({ filename.string(), {} }).first;
-		auto& moduleInfo      = itr->second;
+		auto& moduleInfo      = m_Modules.insert({ filename.string(), {} }).first->second;
 		moduleInfo.m_Handle   = static_cast<void*>(library);
 		moduleInfo.m_Module   = module;
 		moduleInfo.m_Filepath = path;
@@ -287,6 +350,7 @@ namespace MonsterEngine::ModuleManager
 
 	void ModuleManager::unloadModuleFromInfo(ModuleInfo& info)
 	{
+		info.m_Module->shutdownModule();
 		info.m_ExitFunc(info.m_Module);
 #if BUILD_IS_SYSTEM_WINDOWS
 		FreeLibrary(static_cast<HMODULE>(info.m_Handle));

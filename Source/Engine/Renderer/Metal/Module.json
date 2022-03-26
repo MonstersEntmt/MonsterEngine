@@ -1,0 +1,10 @@
+{
+	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
+	"Name": "Renderer.Metal",
+	"Type": "Module",
+	"PublicDir": "Public/",
+	"PrivateDir": "Private/",
+	"Version": [ 0, 1, 0 ],
+	"SetupScriptPath": "Setup.lua",
+	"Dependencies": [ "MonsterEngine.Core", "MonsterEngine.WindowManager", "MonsterEngine.Renderer.RHI" ]
+}

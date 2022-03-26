@@ -28,7 +28,7 @@ namespace MonsterEngine::WindowManager
 		WindowManager(WindowManager&&)      = delete;
 		WindowManager& operator=(const WindowManager&) = delete;
 		WindowManager& operator=(WindowManager&&) = delete;
-		~WindowManager()                          = default;
+		~WindowManager();
 
 		std::uint32_t newWindowID();
 

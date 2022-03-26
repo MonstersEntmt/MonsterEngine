@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include "Version.h"
 
 #include <filesystem>
 #include <stdexcept>
@@ -31,6 +32,7 @@ namespace MonsterEngine::ModuleManager
 
 		public:
 			std::filesystem::path m_Filepath;
+			Version               m_Version  = {};
 			void*                 m_Handle   = nullptr;
 			IMonsterModule*       m_Module   = nullptr;
 			ModuleExitpointFunc   m_ExitFunc = nullptr;
@@ -46,6 +48,8 @@ namespace MonsterEngine::ModuleManager
 
 		IMonsterModule*       getModule(const std::string& name);
 		const IMonsterModule* getModule(const std::string& name) const;
+
+		std::unordered_map<std::string, ModuleInfo>& getAvailableModules();
 
 		void  addSearchDir(const std::filesystem::path& searchDir);
 		void  removeSearchDir(const std::filesystem::path& searchDir);
@@ -67,6 +71,7 @@ namespace MonsterEngine::ModuleManager
 		void        unloadModuleFromInfo(ModuleInfo& info);
 
 	private:
+		std::unordered_map<std::string, ModuleInfo> m_AvailableModules;
 		std::unordered_map<std::string, ModuleInfo> m_Modules;
 
 		std::vector<std::filesystem::path> m_SearchDirs;

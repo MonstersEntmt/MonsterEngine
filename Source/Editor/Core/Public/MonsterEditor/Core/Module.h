@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Module.h>
+#include <MonsterEngine/Renderer/RHI/IRHI.h>
 
 #include <cstdint>
+
+#include <memory>
 
 namespace MonsterEditor::Core
 {
@@ -18,5 +21,8 @@ namespace MonsterEditor::Core
 
 	private:
 		std::uint32_t m_Window = 0;
+
+		MonsterEngine::Renderer::RHI::IRHI*                      m_RHI = nullptr;
+		std::unique_ptr<MonsterEngine::Renderer::RHI::IInstance> m_Instance;
 	};
 } // namespace MonsterEditor::Core

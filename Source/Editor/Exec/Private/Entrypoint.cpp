@@ -1,15 +1,22 @@
+#include <MonsterEngine/Logger/Logger.h>
 #include <MonsterEngine/ModuleManager/ModuleManager.h>
 
 #include <cstdlib>
-
-#include <iostream>
 
 int main(int argc, char** argv)
 {
 	using namespace MonsterEngine;
 	auto& moduleManager = ModuleManager::ModuleManager::Get();
 	moduleManager.addSearchDir(std::filesystem::path { argv[0] }.parent_path());
-	auto editorCore = moduleManager.loadModule("MonsterEditor.Core");
+
+	auto modules = moduleManager.getAvailableModules();
+	for (auto& module : modules)
+		Logger::Trace("Found module '{}' version {}.{}.{}", module.first, module.second.m_Version.m_Major, module.second.m_Version.m_Minor, module.second.m_Version.m_Patch);
+
+	for (auto& module : modules)
+		moduleManager.loadModule(module.first);
+
+	auto editorCore = moduleManager.getModule("MonsterEditor.Core");
 	editorCore->run();
 	ModuleManager::ModuleManager::Destroy();
 }

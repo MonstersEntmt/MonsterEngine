@@ -19,6 +19,7 @@
 
 #define MonsterEngine_Core_API ME_MODULE_IMPORT
 #define MonsterEngine_WindowManager_API ME_MODULE_IMPORT
+#define MonsterEngine_Renderer_RHI_API ME_MODULE_IMPORT
 #define MonsterEngine_ModuleManager_API ME_MODULE_IMPORT
 
 #define MonsterEditor_Core_API ME_MODULE_EXPORT
