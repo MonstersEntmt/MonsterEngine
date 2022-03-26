@@ -54,4 +54,9 @@ namespace MonsterEngine::Renderer::RHI
 		                        });
 		return itr != m_RHIs.end() ? itr->get() : nullptr;
 	}
+
+	void Registry::selectRHI(std::string_view name)
+	{
+		m_SelectedRHI = getRHI(name);
+	}
 } // namespace MonsterEngine::Renderer::RHI

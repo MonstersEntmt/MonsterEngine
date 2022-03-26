@@ -334,6 +334,7 @@ namespace MonsterEngine::ModuleManager
 			return nullptr;
 
 		IMonsterModule* module = moduleEntrypointFunc();
+		module->m_NativeHandle = library;
 
 		auto filename = path.filename();
 		filename.replace_extension("");
@@ -341,7 +342,7 @@ namespace MonsterEngine::ModuleManager
 		filename.replace_filename(filename.u8string().substr(3));
 #endif
 		auto& moduleInfo      = m_Modules.insert({ filename.string(), {} }).first->second;
-		moduleInfo.m_Handle   = static_cast<void*>(library);
+		moduleInfo.m_Handle   = library;
 		moduleInfo.m_Module   = module;
 		moduleInfo.m_Filepath = path;
 		moduleInfo.m_ExitFunc = moduleExitpointFunc;

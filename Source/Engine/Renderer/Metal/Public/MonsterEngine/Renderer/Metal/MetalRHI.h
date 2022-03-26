@@ -13,6 +13,8 @@ namespace MonsterEngine::Renderer::Metal
 
 		virtual bool isCompatible() override;
 
+		virtual void setGLFWOptions(WindowManager::Window& window) override;
+
 		virtual std::unique_ptr<RHI::IInstance> newInstance() override;
 
 	private:

@@ -1,7 +1,10 @@
 #include "MonsterEngine/WindowManager/Window.h"
 
+#include <MonsterEngine/Renderer/RHI/Registry.h>
+
 #include <GLFW/glfw3.h>
 
+#include <stdexcept>
 #include <utility>
 
 namespace MonsterEngine::WindowManager
@@ -17,9 +20,15 @@ namespace MonsterEngine::WindowManager
 		if (m_Native)
 			return;
 
+		auto rhi = Renderer::RHI::Registry::Get().getSelectedRHI();
+		if (!rhi)
+			throw std::runtime_error("No RHI was selected prior to window creation!");
 		glfwDefaultWindowHints();
+		rhi->setGLFWOptions(*this);
 
 		m_Native = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
+		if (!m_Native)
+			throw std::runtime_error("GLFW failed to create window!");
 	}
 
 	void Window::destroy()

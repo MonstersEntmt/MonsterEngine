@@ -5,5 +5,5 @@
 	"PublicDir": "Public/",
 	"PrivateDir": "Private/",
 	"Version": [ 0, 1, 0 ],
-	"Dependencies": [ "MonsterEngine.Core", "MonsterEngine.WindowManager" ]
+	"Dependencies": [ "MonsterEngine.Core" ]
 }

@@ -24,6 +24,9 @@ namespace MonsterEngine::Renderer::RHI
 		const IRHI* getRHI(std::string_view name) const;
 		auto&       getRHIs() const { return m_RHIs; }
 
+		void selectRHI(std::string_view name);
+		auto getSelectedRHI() const { return m_SelectedRHI; }
+
 	private:
 		Registry()                = default;
 		Registry(const Registry&) = delete;
@@ -34,5 +37,7 @@ namespace MonsterEngine::Renderer::RHI
 
 	private:
 		std::vector<std::unique_ptr<IRHI>> m_RHIs;
+
+		IRHI* m_SelectedRHI = nullptr;
 	};
 } // namespace MonsterEngine::Renderer::RHI

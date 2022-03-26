@@ -1,6 +1,8 @@
 #include "MonsterEngine/Renderer/Metal/MetalRHI.h"
 #include "MonsterEngine/Renderer/Metal/MetalInstance.h"
 
+#include <GLFW/glfw3.h>
+
 namespace MonsterEngine::Renderer::Metal
 {
 	MetalRHI::MetalRHI()
@@ -9,6 +11,11 @@ namespace MonsterEngine::Renderer::Metal
 	bool MetalRHI::isCompatible()
 	{
 		return true;
+	}
+
+	void MetalRHI::setGLFWOptions(WindowManager::Window& window)
+	{
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	}
 
 	std::unique_ptr<RHI::IInstance> MetalRHI::newInstance()

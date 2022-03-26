@@ -23,7 +23,8 @@ namespace MonsterEditor::Core
 		using namespace MonsterEngine;
 
 		auto& rhiRegistry = Renderer::RHI::Registry::Get();
-		m_RHI             = rhiRegistry.getRHI("Metal");
+		rhiRegistry.selectRHI("Metal");
+		m_RHI = rhiRegistry.getSelectedRHI();
 		if (!m_RHI)
 			throw std::runtime_error("RHI 'Metal' could not be found!");
 		m_Instance = m_RHI->newInstance();

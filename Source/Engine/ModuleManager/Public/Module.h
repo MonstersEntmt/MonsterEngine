@@ -2,8 +2,18 @@
 
 #include "Version.h"
 
+#include <string>
+
+namespace MonsterEngine::ModuleManager
+{
+	class MonsterEngine_ModuleManager_API ModuleManager;
+}
+
 class MonsterEngine_ModuleManager_API IMonsterModule
 {
+public:
+	friend MonsterEngine::ModuleManager::ModuleManager;
+
 public:
 	IMonsterModule(Version version);
 	virtual ~IMonsterModule() = default;
@@ -13,9 +23,13 @@ public:
 
 	virtual void run() {}
 
+	void* getProcAddress(const std::string& name);
+
+	auto getNativeHandle() const { return m_NativeHandle; }
 	auto getVersion() const { return m_Version; }
 
 private:
+	void*   m_NativeHandle = nullptr;
 	Version m_Version;
 };
 
