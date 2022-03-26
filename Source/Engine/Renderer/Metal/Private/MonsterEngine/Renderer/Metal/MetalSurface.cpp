@@ -2,13 +2,13 @@
 
 namespace MonsterEngine::Renderer::Metal
 {
-	MetalSurface::MetalSurface(WindowManager::Window& window, CA::MetalLayer* metalLayer)
+	MetalSurface::MetalSurface(WindowManager::Window& window, CAMetalLayer* metalLayer)
 	    : m_WindowID(window.getId()), m_MetalLayer(metalLayer)
 	{
 	}
 
 	MetalSurface::~MetalSurface()
 	{
-		m_MetalLayer->release();
+		[m_MetalLayer release];
 	}
 } // namespace MonsterEngine::Renderer::Metal

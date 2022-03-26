@@ -2,6 +2,8 @@
 
 #include "ISurface.h"
 
+#include <memory>
+
 namespace MonsterEngine::WindowManager
 {
 	class ME_MODULE_IMPORT Window;

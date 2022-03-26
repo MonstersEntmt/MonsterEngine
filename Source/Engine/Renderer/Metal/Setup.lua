@@ -4,6 +4,11 @@ files({
 })
 removefiles({ ".DS_Store" })
 
+buildoptions({ "-x objective-c++" })
+
+--filter("files:**.cpp")
+--compileas("Objective-C++")
+
 filter("system:macosx")
 	links({
 		"Foundation.framework",

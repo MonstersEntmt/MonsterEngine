@@ -25,7 +25,6 @@ namespace MonsterEngine::Renderer::RHI
 		void         init();
 
 		virtual void setGLFWOptions(WindowManager::Window& window)  = 0;
-		virtual void postWindowSetup(WindowManager::Window& window) = 0;
 
 		virtual std::unique_ptr<IInstance> newInstance() = 0;
 
