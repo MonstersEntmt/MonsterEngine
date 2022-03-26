@@ -19,25 +19,27 @@ local function LoadFileTemplates()
 	return templates
 end
 
-local MonsterEngine = {
-	IsEngine      = true,
-	Directory     = "",
-	FileTemplates = LoadFileTemplates(),
-	ModuleManager = {
-		ProjectDirs          = {},
-		LoadedEnginePackages = {},
-		LoadedPackages       = {},
-		PackageHandler       = {
-			ModuleHandler = {}
+if not MonsterEngine then
+	MonsterEngine = {
+		IsEngine      = true,
+		Directory     = "",
+		FileTemplates = LoadFileTemplates(),
+		ModuleManager = {
+			ProjectDirs          = {},
+			LoadedEnginePackages = {},
+			LoadedPackages       = {},
+			PackageHandler       = {
+				ModuleHandler = {}
+			}
+		},
+		PremakeUtils = {
+			Host        = os.host(),
+			Target      = os.target(),
+			Arch        = nil,
+			TargetArchs = nil
 		}
-	},
-	PremakeUtils = {
-		Host        = os.host(),
-		Target      = os.target(),
-		Arch        = nil,
-		TargetArchs = nil
 	}
-}
+end
 local ModuleManager  = MonsterEngine.ModuleManager
 local PackageHandler = ModuleManager.PackageHandler
 local ModuleHandler  = PackageHandler.ModuleHandler
@@ -260,6 +262,16 @@ function ModuleHandler:GetModuleIDPath()
 	return self:GetModuleID():gsub("%.", "/") .. "/"
 end
 
+function ModuleHandler:GetModulePackage()
+	local moduleID = self:GetModuleID()
+	return moduleID:sub(1, moduleID:find("%..[^.]*$"))
+end
+
+function ModuleHandler:GetModuleName()
+	local moduleID = self:GetModuleID()
+	return moduleID:sub(moduleID:find("%.[^.]*$") + 1)
+end
+
 function ModuleHandler:GetRelativeDir()
 	verbosef("ModuleHandler:GetRelativeDir()")
 	return path.translate(path.getrelative(self.Package.SearchDirectory, self.ModulePath), "/")
@@ -420,15 +432,11 @@ function PremakeUtils:SetupModule(module)
 	local moduleID = module:GetModuleID()
 
 	local moduleFolder = module:GetRelativeDir()
-	local moduleGroup  = moduleFolder
-	if moduleGroup:sub(-module.Json.Name:len()) == module.Json.Name then
-		moduleGroup = moduleGroup:sub(1, -module.Json.Name:len() - 2)
-	end
 	CurrentModule = module
-	group(moduleGroup)
+	group(module:GetModulePackage():gsub("%.", "/") .. "/")
 	project(moduleID)
-		-- TODO: Implement projectname(module.Json.Name)
-		filename(module.Json.Name)
+		-- TODO: Implement projectname(module:GetModuleName())
+		filename(module:GetModuleName())
 		location(module.ModulePath)
 
 	local moduleDeps = {}

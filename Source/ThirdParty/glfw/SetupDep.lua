@@ -1,3 +1,5 @@
+defines({ "GLFW_INCLUDE_NONE" })
+
 filter("system:linux")
 	links({ "dl" })
 	linkoptions({ "-pthread" })

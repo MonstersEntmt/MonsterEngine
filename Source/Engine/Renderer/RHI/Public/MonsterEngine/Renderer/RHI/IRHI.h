@@ -21,10 +21,11 @@ namespace MonsterEngine::Renderer::RHI
 
 		auto& getName() const { return m_Name; }
 
-		virtual bool isCompatible() = 0;
-		void         init();
+		void init();
 
-		virtual void setGLFWOptions(WindowManager::Window& window)  = 0;
+		virtual bool isCompatible() = 0;
+
+		virtual void setGLFWOptions(WindowManager::Window& window) = 0;
 
 		virtual std::unique_ptr<IInstance> newInstance() = 0;
 

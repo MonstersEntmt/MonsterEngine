@@ -23,12 +23,11 @@ namespace MonsterEditor::Core
 		using namespace MonsterEngine;
 
 		auto& rhiRegistry = Renderer::RHI::Registry::Get();
-		rhiRegistry.selectRHI("Metal");
+		rhiRegistry.selectRHI("Vulkan");
 		m_RHI = rhiRegistry.getSelectedRHI();
 		if (!m_RHI)
-			throw std::runtime_error("RHI 'Metal' could not be found!");
-		m_Instance = m_RHI->newInstance();
-		m_Device   = m_Instance->findDevice();
+			throw std::runtime_error("RHI 'Vulkan' could not be found!");
+		m_RHI->init();
 
 		auto& windowManager = WindowManager::WindowManager::Get();
 		m_Window            = windowManager.createWindow(1280, 720, "MonsterEditor");

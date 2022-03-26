@@ -8,7 +8,7 @@ typedef struct GLFWwindow GLFWwindow;
 
 namespace MonsterEngine::WindowManager
 {
-	struct MonsterEngine_WindowManager_API Window
+	class MonsterEngine_WindowManager_API Window
 	{
 	public:
 		Window(std::uint32_t id, std::uint32_t width, std::uint32_t height, const std::string& title);

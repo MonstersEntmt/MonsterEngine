@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Module.h>
-#include <MonsterEngine/Renderer/RHI/IDevice.h>
-#include <MonsterEngine/Renderer/RHI/IInstance.h>
 #include <MonsterEngine/Renderer/RHI/IRHI.h>
 
 #include <cstdint>
@@ -24,8 +22,6 @@ namespace MonsterEditor::Core
 	private:
 		std::uint32_t m_Window = 0;
 
-		MonsterEngine::Renderer::RHI::IRHI*                      m_RHI = nullptr;
-		std::unique_ptr<MonsterEngine::Renderer::RHI::IInstance> m_Instance;
-		std::unique_ptr<MonsterEngine::Renderer::RHI::IDevice>   m_Device;
+		MonsterEngine::Renderer::RHI::IRHI* m_RHI = nullptr;
 	};
 } // namespace MonsterEditor::Core
