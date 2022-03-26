@@ -1,3 +1,5 @@
+require("Actions/Clean")
+
 newoption({
 	trigger     = "target-arch",
 	value       = "architectures",
