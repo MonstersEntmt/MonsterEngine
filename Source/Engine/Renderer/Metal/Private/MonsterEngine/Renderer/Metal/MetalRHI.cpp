@@ -1,6 +1,8 @@
 #include "MonsterEngine/Renderer/Metal/MetalRHI.h"
 #include "MonsterEngine/Renderer/Metal/MetalInstance.h"
 
+#include <MonsterEngine/WindowManager/Window.h>
+
 #include <GLFW/glfw3.h>
 
 namespace MonsterEngine::Renderer::Metal

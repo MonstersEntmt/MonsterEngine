@@ -12,6 +12,8 @@ namespace MonsterEngine::Renderer::Metal
 		MetalDevice(MTL::Device* device);
 		~MetalDevice();
 
+		virtual std::unique_ptr<RHI::ISurface> newSurface(WindowManager::Window& window) override;
+
 	private:
 		MTL::Device* m_Device;
 	};

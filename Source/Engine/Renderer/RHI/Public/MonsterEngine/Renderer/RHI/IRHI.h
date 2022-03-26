@@ -22,12 +22,17 @@ namespace MonsterEngine::Renderer::RHI
 		auto& getName() const { return m_Name; }
 
 		virtual bool isCompatible() = 0;
+		void         init();
 
-		virtual void setGLFWOptions(WindowManager::Window& window) = 0;
+		virtual void setGLFWOptions(WindowManager::Window& window)  = 0;
+		virtual void postWindowSetup(WindowManager::Window& window) = 0;
 
 		virtual std::unique_ptr<IInstance> newInstance() = 0;
 
 	private:
 		std::string m_Name;
+
+		std::unique_ptr<RHI::IInstance> m_Instance;
+		std::unique_ptr<RHI::IDevice>   m_Device;
 	};
 } // namespace MonsterEngine::Renderer::RHI
