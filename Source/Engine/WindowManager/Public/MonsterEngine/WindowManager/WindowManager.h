@@ -17,6 +17,7 @@ namespace MonsterEngine::WindowManager
 		static void           Destroy();
 
 	public:
+		Window*       getWindow(std::uint32_t window);
 		std::uint32_t createWindow(std::uint32_t width, std::uint32_t height, std::string_view title);
 		void          destroyWindow(std::uint32_t window);
 

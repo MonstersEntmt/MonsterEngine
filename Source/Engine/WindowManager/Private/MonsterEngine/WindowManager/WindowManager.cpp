@@ -17,6 +17,12 @@ namespace MonsterEngine::WindowManager
 		delete &Get();
 	}
 
+	Window* WindowManager::getWindow(std::uint32_t window)
+	{
+		auto itr = m_Windows.find(window);
+		return itr != m_Windows.end() ? &itr->second : nullptr;
+	}
+
 	std::uint32_t WindowManager::createWindow(std::uint32_t width, std::uint32_t height, std::string_view title)
 	{
 		std::uint32_t id     = newWindowID();

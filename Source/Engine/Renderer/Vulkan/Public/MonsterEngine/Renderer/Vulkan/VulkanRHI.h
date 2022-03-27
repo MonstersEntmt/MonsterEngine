@@ -14,7 +14,5 @@ namespace MonsterEngine::Renderer::Vulkan
 		virtual void setGLFWOptions(WindowManager::Window& window) override;
 
 		virtual std::unique_ptr<RHI::IInstance> newInstance() override;
-
-	private:
 	};
 } // namespace MonsterEngine::Renderer::Vulkan

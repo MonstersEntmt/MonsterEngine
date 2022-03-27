@@ -20,6 +20,12 @@ namespace MonsterEngine::Renderer::Vulkan
 		auto getHandle() const { return m_Instance; }
 
 	private:
+		void         create();
+		virtual void destroy() override;
+
+	private:
+		Version m_Version;
+
 		VkInstance m_Instance = nullptr;
 	};
 } // namespace MonsterEngine::Renderer::Vulkan

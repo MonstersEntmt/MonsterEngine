@@ -1,9 +1,11 @@
 #pragma once
 
 #include "IInstance.h"
+#include "RHINode.h"
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace MonsterEngine::WindowManager
 {
@@ -12,14 +14,12 @@ namespace MonsterEngine::WindowManager
 
 namespace MonsterEngine::Renderer::RHI
 {
-	class MonsterEngine_Renderer_RHI_API IRHI
+	class MonsterEngine_Renderer_RHI_API IRHI : public RHINode
 	{
 	public:
 		IRHI(const std::string& name);
 		IRHI(std::string&& name);
 		virtual ~IRHI() = default;
-
-		auto& getName() const { return m_Name; }
 
 		void init();
 
@@ -28,6 +28,12 @@ namespace MonsterEngine::Renderer::RHI
 		virtual void setGLFWOptions(WindowManager::Window& window) = 0;
 
 		virtual std::unique_ptr<IInstance> newInstance() = 0;
+
+		auto getMainInstance() const { return m_Instance.get(); }
+		auto getMainDevice() const { return m_Device.get(); }
+
+	private:
+		virtual void destroy() override;
 
 	private:
 		std::string m_Name;
