@@ -23,7 +23,6 @@ namespace MonsterEngine::Renderer::Vulkan
 
 	std::unique_ptr<RHI::ISurface> VulkanDevice::newSurface(WindowManager::Window& window)
 	{
-		
 		return std::make_unique<VulkanSurface>("Window " + std::to_string(window.getId()), this, window);
 	}
 
