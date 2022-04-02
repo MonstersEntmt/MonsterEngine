@@ -24,10 +24,13 @@ namespace MonsterEngine::Renderer::Vulkan
 	{
 		std::uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
-		std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
+		if (!deviceCount)
+			throw std::runtime_error("Found no vulkan capable physical devices!");
+
+		std::vector<VkPhysicalDevice> physicalDevices { deviceCount };
 		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, physicalDevices.data());
 
-		VkPhysicalDevice bestPhysicalDevice = physicalDevices.empty() ? nullptr : physicalDevices[0];
+		VkPhysicalDevice bestPhysicalDevice = physicalDevices[0];
 		for (auto physicalDevice : physicalDevices)
 		{
 			VkPhysicalDeviceProperties properties = {};
@@ -42,24 +45,7 @@ namespace MonsterEngine::Renderer::Vulkan
 		vkGetPhysicalDeviceProperties(bestPhysicalDevice, &bestProperties);
 		Logger::Trace("Using vulkan physical device '{}'", bestProperties.deviceName);
 
-		VkPhysicalDeviceFeatures enabledFeatures = {};
-
-		VkDeviceCreateInfo createInfo      = {};
-		createInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		createInfo.pNext                   = nullptr;
-		createInfo.flags                   = 0;
-		createInfo.queueCreateInfoCount    = 0;
-		createInfo.pQueueCreateInfos       = nullptr;
-		createInfo.enabledLayerCount       = 0;
-		createInfo.ppEnabledLayerNames     = nullptr;
-		createInfo.enabledExtensionCount   = 0;
-		createInfo.ppEnabledExtensionNames = nullptr;
-		createInfo.pEnabledFeatures        = &enabledFeatures;
-
-		VkDevice device;
-		if (vkCreateDevice(bestPhysicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create vulkan device");
-		return std::make_unique<VulkanDevice>(std::string { bestProperties.deviceName }, this, bestPhysicalDevice, device);
+		return std::make_unique<VulkanDevice>(std::string { bestProperties.deviceName }, this, bestPhysicalDevice);
 	}
 
 	void VulkanInstance::create()

@@ -2,6 +2,7 @@
 #include "MonsterEditor/Core/ModuleVersion.h"
 
 #include <Module.h>
+#include <MonsterEngine/Renderer/RHI/ISwapchain.h>
 #include <MonsterEngine/Renderer/RHI/Registry.h>
 #include <MonsterEngine/WindowManager/WindowManager.h>
 
@@ -31,8 +32,12 @@ namespace MonsterEditor::Core
 
 		auto& windowManager = WindowManager::WindowManager::Get();
 		m_Window            = windowManager.createWindow(1280, 720, "MonsterEditor");
+
 		while (windowManager.update())
 		{
+			auto swapchain = windowManager.getWindow(m_Window)->getSwapchain();
+			swapchain->begin();
+			swapchain->end();
 		}
 	}
 } // namespace MonsterEditor::Core

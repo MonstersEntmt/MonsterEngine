@@ -1,5 +1,5 @@
 #include "MonsterEngine/Renderer/Metal/MetalDevice.h"
-#include "MonsterEngine/Renderer/Metal/MetalSurface.h"
+#include "MonsterEngine/Renderer/Metal/MetalSwapchain.h"
 
 #include <MonsterEngine/WindowManager/Window.h>
 
@@ -19,7 +19,7 @@ namespace MonsterEngine::Renderer::Metal
 		m_Device->release();
 	}
 
-	std::unique_ptr<RHI::ISurface> MetalDevice::newSurface(WindowManager::Window& window)
+	std::unique_ptr<RHI::ISwapchain> MetalDevice::newSurface(WindowManager::Window& window)
 	{
 		NSWindow* nswindow              = glfwGetCocoaWindow(window.getNative());
 		nswindow.contentView.layer      = [CAMetalLayer layer];
@@ -28,6 +28,6 @@ namespace MonsterEngine::Renderer::Metal
 		metalLayer.device               = (id<MTLDevice>) m_Device;
 		metalLayer.pixelFormat          = MTLPixelFormatBGRA8Unorm;
 		metalLayer.frame.size           = { static_cast<CGFloat>(window.getWidth()), static_cast<CGFloat>(window.getHeight()) };
-		return std::make_unique<MetalSurface>(window, metalLayer);
+		return std::make_unique<MetalSwapchain>(window, metalLayer);
 	}
 } // namespace MonsterEngine::Renderer::Metal

@@ -47,7 +47,7 @@ namespace MonsterEngine::WindowManager
 	{
 		glfwPollEvents();
 		std::erase_if(m_Windows,
-		              [](const std::pair<std::uint32_t, Window>& window) -> bool
+		              [](const std::pair<const std::uint32_t, Window>& window) -> bool
 		              {
 			              if (window.second.shouldCloseWindow())
 			              {

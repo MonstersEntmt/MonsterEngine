@@ -1,6 +1,10 @@
 #include "MonsterEngine/Renderer/OpenGL/OpenGLInstance.h"
 #include "MonsterEngine/Renderer/OpenGL/OpenGLDevice.h"
 
+#include "Platforms/OpenGL/glad.h"
+
+#include "MonsterEngine/Logger/Logger.h"
+
 #include <utility>
 
 namespace MonsterEngine::Renderer::OpenGL
@@ -13,6 +17,9 @@ namespace MonsterEngine::Renderer::OpenGL
 
 	std::unique_ptr<RHI::IDevice> OpenGLInstance::findDevice()
 	{
-		return std::make_unique<OpenGLDevice>("Device", this);
+		std::string vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+		std::string renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+		Logger::Trace("Found OpenGL device '{} {}'", vendor, renderer);
+		return std::make_unique<OpenGLDevice>("Device " + vendor + ' ' + renderer, this);
 	}
 } // namespace MonsterEngine::Renderer::OpenGL

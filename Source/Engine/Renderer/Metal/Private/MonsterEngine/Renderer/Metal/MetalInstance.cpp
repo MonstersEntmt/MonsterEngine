@@ -19,7 +19,7 @@ namespace MonsterEngine::Renderer::Metal
 	std::unique_ptr<RHI::IDevice> MetalInstance::findDevice()
 	{
 		MTL::Device* device = MTL::CreateSystemDefaultDevice();
-		Logger::Trace("Found metal device '{}'", device->name()->utf8String());
+		Logger::Trace("Found Metal device '{}'", device->name()->utf8String());
 		return std::make_unique<MetalDevice>(device);
 	}
 } // namespace MonsterEngine::Renderer::Metal

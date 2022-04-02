@@ -11,7 +11,5 @@ namespace MonsterEngine::Renderer::Metal
 		virtual ~MetalInstance();
 
 		virtual std::unique_ptr<RHI::IDevice> findDevice() override;
-
-	private:
 	};
 } // namespace MonsterEngine::Renderer::Metal

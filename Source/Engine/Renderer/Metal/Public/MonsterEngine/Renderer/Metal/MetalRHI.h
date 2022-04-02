@@ -16,7 +16,5 @@ namespace MonsterEngine::Renderer::Metal
 		virtual void setGLFWOptions(WindowManager::Window& window) override;
 
 		virtual std::unique_ptr<RHI::IInstance> newInstance() override;
-
-	private:
 	};
 } // namespace MonsterEngine::Renderer::Metal

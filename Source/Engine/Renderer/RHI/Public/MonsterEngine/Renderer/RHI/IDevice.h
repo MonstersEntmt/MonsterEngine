@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ISurface.h"
 #include "RHINode.h"
 
 #include <memory>
@@ -13,6 +12,8 @@ namespace MonsterEngine::WindowManager
 
 namespace MonsterEngine::Renderer::RHI
 {
+	class MonsterEngine_Renderer_RHI_API ISwapchain;
+
 	class MonsterEngine_Renderer_RHI_API IDevice : public RHINode
 	{
 	public:
@@ -20,6 +21,6 @@ namespace MonsterEngine::Renderer::RHI
 		IDevice(std::string&& name);
 		virtual ~IDevice() = default;
 
-		virtual std::unique_ptr<ISurface> newSurface(WindowManager::Window& window) = 0;
+		virtual std::unique_ptr<ISwapchain> newSwapchain(WindowManager::Window& window) = 0;
 	};
 } // namespace MonsterEngine::Renderer::RHI

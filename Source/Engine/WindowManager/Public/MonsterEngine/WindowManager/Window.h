@@ -1,7 +1,10 @@
 #pragma once
 
+#include <MonsterEngine/Renderer/RHI/ISwapchain.h>
+
 #include <cstdint>
 
+#include <memory>
 #include <string>
 
 typedef struct GLFWwindow GLFWwindow;
@@ -25,6 +28,7 @@ namespace MonsterEngine::WindowManager
 		auto  getHeight() const { return m_Height; }
 		auto& getTitle() const { return m_Title; }
 		auto  getNative() const { return m_Native; }
+		auto  getSwapchain() const { return m_Swapchain.get(); }
 
 	private:
 		std::uint32_t m_ID;
@@ -33,5 +37,7 @@ namespace MonsterEngine::WindowManager
 		std::string   m_Title;
 
 		GLFWwindow* m_Native = nullptr;
+
+		std::unique_ptr<Renderer::RHI::ISwapchain> m_Swapchain = nullptr;
 	};
 } // namespace MonsterEngine::WindowManager

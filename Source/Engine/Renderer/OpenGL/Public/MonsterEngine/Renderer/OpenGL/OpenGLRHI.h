@@ -9,10 +9,16 @@ namespace MonsterEngine::Renderer::OpenGL
 	public:
 		OpenGLRHI();
 
-		virtual bool isCompatible() override;
+		virtual bool isCompatible() override { return m_Compatible; }
 
 		virtual void setGLFWOptions(WindowManager::Window& window) override;
 
 		virtual std::unique_ptr<RHI::IInstance> newInstance() override;
+
+	private:
+		void testCompatibility();
+
+	private:
+		bool m_Compatible;
 	};
 } // namespace MonsterEngine::Renderer::OpenGL

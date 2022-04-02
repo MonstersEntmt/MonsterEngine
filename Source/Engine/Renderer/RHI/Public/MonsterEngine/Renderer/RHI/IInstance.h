@@ -1,6 +1,5 @@
 #pragma once
 
-#include "IDevice.h"
 #include "RHINode.h"
 
 #include <memory>
@@ -8,6 +7,8 @@
 
 namespace MonsterEngine::Renderer::RHI
 {
+	class MonsterEngine_Renderer_RHI_API IDevice;
+
 	class MonsterEngine_Renderer_RHI_API IInstance : public RHINode
 	{
 	public:

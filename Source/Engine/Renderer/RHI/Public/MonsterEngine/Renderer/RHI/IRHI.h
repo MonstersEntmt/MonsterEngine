@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IDevice.h"
 #include "IInstance.h"
 #include "RHINode.h"
 

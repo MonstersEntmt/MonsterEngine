@@ -1,7 +1,6 @@
 #pragma once
 
 #include <MonsterEngine/Renderer/RHI/IDevice.h>
-#include <MonsterEngine/Renderer/RHI/ISurface.h>
 
 #include <vulkan/vulkan.h>
 
@@ -14,17 +13,18 @@ namespace MonsterEngine::Renderer::Vulkan
 	class MonsterEngine_Renderer_Vulkan_API VulkanDevice : public RHI::IDevice
 	{
 	public:
-		VulkanDevice(const std::string& name, VulkanInstance* instance, VkPhysicalDevice physicalDevice, VkDevice device);
-		VulkanDevice(std::string&& name, VulkanInstance* instance, VkPhysicalDevice physicalDevice, VkDevice device);
+		VulkanDevice(const std::string& name, VulkanInstance* instance, VkPhysicalDevice physicalDevice);
+		VulkanDevice(std::string&& name, VulkanInstance* instance, VkPhysicalDevice physicalDevice);
 		~VulkanDevice();
 
-		virtual std::unique_ptr<RHI::ISurface> newSurface(WindowManager::Window& window) override;
+		virtual std::unique_ptr<RHI::ISwapchain> newSwapchain(WindowManager::Window& window) override;
 
 		auto getInstance() const { return m_Instance; }
 		auto getPhysicalDevice() const { return m_PhysicalDevice; }
 		auto getHandle() const { return m_Device; }
 
 	private:
+		void         create();
 		virtual void destroy() override;
 
 	private:

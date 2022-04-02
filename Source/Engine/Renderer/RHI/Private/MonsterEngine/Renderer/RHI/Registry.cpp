@@ -1,4 +1,5 @@
 #include "MonsterEngine/Renderer/RHI/Registry.h"
+#include "MonsterEngine/Renderer/RHI/IRHI.h"
 
 #include <MonsterEngine/Logger/Logger.h>
 

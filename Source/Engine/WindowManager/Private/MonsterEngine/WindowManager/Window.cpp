@@ -1,5 +1,7 @@
 #include "MonsterEngine/WindowManager/Window.h"
 
+#include <MonsterEngine/Renderer/RHI/IDevice.h>
+#include <MonsterEngine/Renderer/RHI/IRHI.h>
 #include <MonsterEngine/Renderer/RHI/Registry.h>
 
 #include <GLFW/glfw3.h>
@@ -29,6 +31,8 @@ namespace MonsterEngine::WindowManager
 		m_Native = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
 		if (!m_Native)
 			throw std::runtime_error("GLFW failed to create window!");
+
+		m_Swapchain = rhi->getMainDevice()->newSwapchain(*this);
 	}
 
 	void Window::destroy()
@@ -36,6 +40,7 @@ namespace MonsterEngine::WindowManager
 		if (!m_Native)
 			return;
 
+		m_Swapchain = nullptr;
 		glfwDestroyWindow(m_Native);
 		m_Native = nullptr;
 	}

@@ -10,12 +10,28 @@
 namespace MonsterEngine::Renderer::OpenGL
 {
 	OpenGLRHI::OpenGLRHI()
-	    : IRHI("OpenGL") {}
+	    : IRHI("OpenGL")
+	{
+		testCompatibility();
+	}
 
-	bool isCompatible()
+	void OpenGLRHI::setGLFWOptions(WindowManager::Window& window)
+	{
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+	}
+
+	std::unique_ptr<RHI::IInstance> OpenGLRHI::newInstance()
+	{
+		return std::make_unique<OpenGLInstance>("MonsterGame");
+	}
+
+	void OpenGLRHI::testCompatibility()
 	{
 		WindowManager::WindowManager::Get();
-
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -27,37 +43,28 @@ namespace MonsterEngine::Renderer::OpenGL
 
 		GLFWwindow* window = glfwCreateWindow(256, 256, nullptr, nullptr, nullptr);
 		if (!window)
-			return false;
+		{
+			m_Compatible = false;
+			return;
+		}
 
 		glfwMakeContextCurrent(window);
 
 		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(&glfwGetProcAddress)))
 		{
 			glfwDestroyWindow(window);
-			return false;
+			m_Compatible = false;
+			return;
 		}
 
 		if (GLVersion.major < 4 || (GLVersion.major == 4 && GLVersion.minor < 6))
 		{
 			glfwDestroyWindow(window);
-			return false;
+			m_Compatible = false;
+			return;
 		}
 
 		glfwDestroyWindow(window);
-		return true;
-	}
-
-	void setGLFWOptions(WindowManager::Window& window)
-	{
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-	}
-
-	std::unique_ptr<RHI::IInstance> newInstance()
-	{
-		return std::make_unique<OpenGLInstance>("MonsterGame");
+		m_Compatible = true;
 	}
 } // namespace MonsterEngine::Renderer::OpenGL

@@ -12,7 +12,7 @@ namespace MonsterEngine::Renderer::OpenGL
 		OpenGLDevice(const std::string& name, OpenGLInstance* instance);
 		OpenGLDevice(std::string&& name, OpenGLInstance* instance);
 
-		virtual std::unique_ptr<RHI::ISurface> newSurface(WindowManager::Window& window) override;
+		virtual std::unique_ptr<RHI::ISwapchain> newSwapchain(WindowManager::Window& window) override;
 
 		auto getInstance() const { return m_Instance; }
 
