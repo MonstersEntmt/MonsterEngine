@@ -19,17 +19,20 @@ namespace MonsterEngine::Renderer::Vulkan
 
 		virtual std::unique_ptr<RHI::ISwapchain> newSwapchain(WindowManager::Window& window) override;
 
-		auto getInstance() const { return m_Instance; }
-		auto getPhysicalDevice() const { return m_PhysicalDevice; }
-		auto getHandle() const { return m_Device; }
+		VulkanInstance* getVulkanInstance() const;
+		auto            getPhysicalDevice() const { return m_PhysicalDevice; }
+		auto            getHandle() const { return m_Device; }
+
+		auto getGraphicsQueue() const { return m_GraphicsQueue; }
 
 	private:
 		void         create();
 		virtual void destroy() override;
 
 	private:
-		VulkanInstance*  m_Instance;
 		VkPhysicalDevice m_PhysicalDevice;
 		VkDevice         m_Device;
+
+		VkQueue m_GraphicsQueue;
 	};
 } // namespace MonsterEngine::Renderer::Vulkan

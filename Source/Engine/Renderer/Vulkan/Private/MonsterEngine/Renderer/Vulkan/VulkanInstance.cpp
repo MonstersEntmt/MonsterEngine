@@ -4,6 +4,9 @@
 
 #include <MonsterEngine/Core/ModuleVersion.h>
 #include <MonsterEngine/Logger/Logger.h>
+#include <MonsterEngine/WindowManager/WindowManager.h>
+
+#include <GLFW/glfw3.h>
 
 #include <stdexcept>
 #include <vector>
@@ -53,9 +56,26 @@ namespace MonsterEngine::Renderer::Vulkan
 
 	void VulkanInstance::create()
 	{
+		WindowManager::WindowManager::Get();
+
+		std::vector<const char*> enabledLayerNames;
+		std::vector<const char*> enabledExtensionNames;
+
+		std::uint32_t glfwExtensionCount = 0;
+		const char**  glfwExtensions     = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		enabledExtensionNames.resize(glfwExtensionCount);
+		for (std::size_t i = 0; i < glfwExtensionCount; ++i)
+			enabledExtensionNames[i] = glfwExtensions[i];
+
+		if (VulkanDebug::IsEnabled())
+		{
+			enabledLayerNames.push_back("VK_LAYER_KHRONOS_validation");
+			enabledExtensionNames.push_back("VK_EXT_debug_utils");
+		}
+
 		Version engineVersion = MonsterEngine::Core::gVersion;
 
-		VkApplicationInfo appInfo  = {};
+		VkApplicationInfo appInfo {};
 		appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		appInfo.pNext              = nullptr;
 		appInfo.pApplicationName   = getName().c_str();
@@ -64,18 +84,27 @@ namespace MonsterEngine::Renderer::Vulkan
 		appInfo.engineVersion      = VK_MAKE_API_VERSION(0, engineVersion.m_Major, engineVersion.m_Minor, engineVersion.m_Patch);
 		appInfo.apiVersion         = VK_API_VERSION_1_3;
 
-		VkInstanceCreateInfo createInfo    = {};
+		VkInstanceCreateInfo createInfo {};
 		createInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pNext                   = nullptr;
 		createInfo.flags                   = 0;
 		createInfo.pApplicationInfo        = &appInfo;
-		createInfo.enabledLayerCount       = 0;
-		createInfo.ppEnabledLayerNames     = nullptr;
-		createInfo.enabledExtensionCount   = 0;
-		createInfo.ppEnabledExtensionNames = nullptr;
+		createInfo.enabledLayerCount       = static_cast<std::uint32_t>(enabledLayerNames.size());
+		createInfo.ppEnabledLayerNames     = enabledLayerNames.data();
+		createInfo.enabledExtensionCount   = static_cast<std::uint32_t>(enabledExtensionNames.size());
+		createInfo.ppEnabledExtensionNames = enabledExtensionNames.data();
+
+		VkDebugUtilsMessengerCreateInfoEXT messengerCreateInfo {};
+		if (VulkanDebug::IsEnabled())
+		{
+			VulkanDebug::PopulateCreateInfo(messengerCreateInfo);
+			createInfo.pNext = &messengerCreateInfo;
+		}
 
 		VkCall({}, vkCreateInstance(&createInfo, nullptr, &m_Instance),
 		       "Failed to create VkInstance!");
+
+		m_Debug = std::make_unique<VulkanDebug>(this);
 	}
 
 	void VulkanInstance::destroy()

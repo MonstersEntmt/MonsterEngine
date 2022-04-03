@@ -479,14 +479,14 @@ function PremakeUtils:SetupModule(module)
 		kind("StaticLib")
 	end
 
-	if module.Json.Type == "Module" or module.Json.Type == "StaticLibrary" or module.Json.Type == "SharedLibrary" then
+	if module.Json.Type == "Module" or module.Json.Type == "StaticLibrary" then
 		targetdir("%{wks.location}/Binaries/%{cfg.system}-%{cfg.platform}-%{cfg.buildcfg}/" .. moduleFolder .. "/")
 	else
 		targetdir("%{wks.location}/Binaries/%{cfg.system}-%{cfg.platform}-%{cfg.buildcfg}/")
 	end
 		objdir("%{wks.location}/Binaries/Int-%{cfg.system}-%{cfg.platform}-%{cfg.buildcfg}/" .. moduleFolder .. "/" .. module.Json.Name .. "/")
 
-	if module.Json.Type == "ModuleManager" or module.Json.Type == "StaticLibrary" then
+	if module.Json.Type == "ModuleManager" or module.Json.Type == "SharedLibrary" then
 		targetname(module.Json.Name)
 	elseif module.Json.Type == "Executable" then
 		targetname(module.Package.Json.Name)

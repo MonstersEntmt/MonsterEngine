@@ -1,4 +1,4 @@
-defines({ "GLFW_INCLUDE_NONE" })
+defines({ "GLFW_INCLUDE_NONE", "GLFW_DLL" })
 
 filter("system:linux")
 	links({ "dl" })

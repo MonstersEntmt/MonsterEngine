@@ -1,3 +1,5 @@
+defines({ "_GLFW_BUILD_DLL" })
+
 files({
 	CurrentModule.ModulePath .. "/glfw/include/**",
 	CurrentModule.ModulePath .. "/glfw/src/context.c",

@@ -14,13 +14,13 @@
 namespace MonsterEngine::Renderer::Vulkan
 {
 	VulkanSwapchain::VulkanSwapchain(const std::string& name, VulkanDevice* device, WindowManager::Window& window)
-	    : ISwapchain(name), m_Device(device), m_WindowId(window.getId())
+	    : ISwapchain(name, device), m_WindowId(window.getId())
 	{
 		create();
 	}
 
 	VulkanSwapchain::VulkanSwapchain(std::string&& name, VulkanDevice* device, WindowManager::Window& window)
-	    : ISwapchain(std::move(name)), m_Device(device), m_WindowId(window.getId())
+	    : ISwapchain(std::move(name), device), m_WindowId(window.getId())
 	{
 		create();
 	}
@@ -32,9 +32,11 @@ namespace MonsterEngine::Renderer::Vulkan
 
 	bool VulkanSwapchain::begin()
 	{
+		auto device = getVulkanDevice();
+
 		// TODO(MarcasRealAccount): Replace nullptrs with syncronizations
 		std::uint32_t imageIndex;
-		if (VkCall({}, vkAcquireNextImageKHR(m_Device->getHandle(), m_Swapchain, ~0ULL, nullptr, nullptr, &imageIndex),
+		if (VkCall({}, vkAcquireNextImageKHR(device->getHandle(), m_Swapchain, ~0ULL, nullptr, nullptr, &imageIndex),
 		           "Failed to acquire next Swapchain image for window {}", m_WindowId) == VK_SUBOPTIMAL_KHR)
 		{
 			recreate();
@@ -112,18 +114,25 @@ namespace MonsterEngine::Renderer::Vulkan
 		vkCmdEndRendering(nullptr);
 	}
 
+	VulkanDevice* VulkanSwapchain::getVulkanDevice() const
+	{
+		return static_cast<VulkanDevice*>(getDevice());
+	}
+
 	void VulkanSwapchain::create()
 	{
 		auto logger = Logger("Vulkan");
 
-		auto device         = m_Device->getHandle();
-		auto physicalDevice = m_Device->getPhysicalDevice();
+		auto vkDevice       = getVulkanDevice();
+		auto device         = vkDevice->getHandle();
+		auto instance       = vkDevice->getVulkanInstance();
+		auto physicalDevice = vkDevice->getPhysicalDevice();
 
 		auto window = WindowManager::WindowManager::Get().getWindow(m_WindowId);
 		if (!window)
 			logger.exception({}, "Invalid window {} used for Swapchain!", m_WindowId);
 
-		VkCall({}, glfwCreateWindowSurface(m_Device->getInstance()->getHandle(), window->getNative(), nullptr, &m_Surface),
+		VkCall({}, glfwCreateWindowSurface(instance->getHandle(), window->getNative(), nullptr, &m_Surface),
 		       "Failed to create VkSurfaceKHR for window {}", m_WindowId);
 
 		VkSurfaceCapabilitiesKHR surfaceCaps {};
@@ -285,8 +294,9 @@ namespace MonsterEngine::Renderer::Vulkan
 	{
 		auto logger = Logger("Vulkan");
 
-		auto device         = m_Device->getHandle();
-		auto physicalDevice = m_Device->getPhysicalDevice();
+		auto vkDevice       = getVulkanDevice();
+		auto device         = vkDevice->getHandle();
+		auto physicalDevice = vkDevice->getPhysicalDevice();
 
 		for (auto view : m_ColorViews)
 			vkDestroyImageView(device, view, nullptr);
@@ -454,7 +464,8 @@ namespace MonsterEngine::Renderer::Vulkan
 
 	void VulkanSwapchain::destroy()
 	{
-		auto device = m_Device->getHandle();
+		auto vkDevice = getVulkanDevice();
+		auto device   = vkDevice->getHandle();
 
 		if (m_Swapchain)
 		{
@@ -479,7 +490,7 @@ namespace MonsterEngine::Renderer::Vulkan
 		}
 
 		if (m_Surface)
-			vkDestroySurfaceKHR(m_Device->getInstance()->getHandle(), m_Surface, nullptr);
+			vkDestroySurfaceKHR(vkDevice->getVulkanInstance()->getHandle(), m_Surface, nullptr);
 		m_Surface = nullptr;
 	}
 } // namespace MonsterEngine::Renderer::Vulkan

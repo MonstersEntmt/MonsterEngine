@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VulkanDebug.h"
+
 #include <MonsterEngine/Renderer/RHI/IInstance.h>
 #include <Version.h>
 
@@ -18,6 +20,7 @@ namespace MonsterEngine::Renderer::Vulkan
 		virtual std::unique_ptr<RHI::IDevice> findDevice() override;
 
 		auto getHandle() const { return m_Instance; }
+		auto getDebug() const { return m_Debug.get(); }
 
 	private:
 		void         create();
@@ -27,5 +30,7 @@ namespace MonsterEngine::Renderer::Vulkan
 		Version m_Version;
 
 		VkInstance m_Instance = nullptr;
+
+		std::unique_ptr<VulkanDebug> m_Debug;
 	};
 } // namespace MonsterEngine::Renderer::Vulkan

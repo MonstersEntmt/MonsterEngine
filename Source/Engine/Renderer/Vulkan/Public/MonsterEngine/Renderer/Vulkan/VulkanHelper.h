@@ -61,4 +61,56 @@ namespace MonsterEngine::Renderer::Vulkan
 			Logger("Vulkan").exception("Returned '{}': {}", VulkanResultToString(result), msg);
 		return result;
 	}
+
+	template <class... Args>
+	VkResult VkCallNoThrow(Logger::Src src, VkResult result, fmt::format_string<Args...> fmt, Args&&... args)
+	{
+		if (result < VK_SUCCESS)
+		{
+			if constexpr (sizeof...(Args) > 0)
+			{
+				std::string msg = fmt::format<Args...>(fmt, std::forward<Args>(args)...);
+				Logger("Vulkan").critical(src, "Returned '{}': {}", VulkanResultToString(result), msg);
+			}
+			else
+			{
+				Logger("Vulkan").critical(src, "Returned '{}'", VulkanResultToString(result));
+			}
+		}
+		return result;
+	}
+
+	template <class... Args>
+	VkResult VkCallNoThrow(VkResult result, fmt::format_string<Args...> fmt, Args&&... args)
+	{
+		if (result < VK_SUCCESS)
+		{
+			if constexpr (sizeof...(Args) > 0)
+			{
+				std::string msg = fmt::format<Args...>(fmt, std::forward<Args>(args)...);
+				Logger("Vulkan").critical("Returned '{}': {}", VulkanResultToString(result), msg);
+			}
+			else
+			{
+				Logger("Vulkan").critical("Returned '{}'", VulkanResultToString(result));
+			}
+		}
+		return result;
+	}
+
+	template <class T>
+	VkResult VkCallNoThrow(Logger::Src src, VkResult result, const T& msg)
+	{
+		if (result < VK_SUCCESS)
+			Logger("Vulkan").critical(src, "Returned '{}': {}", VulkanResultToString(result), msg);
+		return result;
+	}
+
+	template <class T>
+	VkResult VkCallNoThrow(VkResult result, const T& msg)
+	{
+		if (result < VK_SUCCESS)
+			Logger("Vulkan").critical("Returned '{}': {}", VulkanResultToString(result), msg);
+		return result;
+	}
 } // namespace MonsterEngine::Renderer::Vulkan

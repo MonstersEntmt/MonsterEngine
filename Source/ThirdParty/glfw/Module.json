@@ -1,7 +1,7 @@
 {
 	"$schema": "../../../Programs/JSON/Schemas/ModuleSchema.json",
 	"Name": "glfw",
-	"Type": "StaticLibrary",
+	"Type": "SharedLibrary",
 	"PublicDir": "glfw/include/",
 	"PrivateDir": "glfw/src/",
 	"Version": [ 0, 1, 0 ],

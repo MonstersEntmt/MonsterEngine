@@ -41,7 +41,7 @@ namespace MonsterEngine
 		template <class... Args>
 		void log(Src src, spdlog::level::level_enum lvl, spdlog::format_string_t<Args...> fmt, Args&&... args)
 		{
-			m_Logger->log<Args...>(src.m_Location, lvl, fmt, std::forward<Args>(args)...);
+			m_Logger->log(src.m_Location, lvl, "[{}:{} {}] {}", src.m_Location.filename, src.m_Location.line, src.m_Location.funcname, fmt::format<Args...>(fmt, std::forward<Args>(args)...));
 		}
 
 		template <class... Args>
@@ -53,7 +53,7 @@ namespace MonsterEngine
 		template <NonFormatString T>
 		void log(Src src, spdlog::level::level_enum lvl, const T& msg)
 		{
-			m_Logger->log<T>(src.m_Location, lvl, msg);
+			m_Logger->log(src.m_Location, lvl, "[{}:{} {}] {}", src.m_Location.filename, src.m_Location.line, src.m_Location.funcname, msg);
 		}
 
 		template <NonFormatString T>

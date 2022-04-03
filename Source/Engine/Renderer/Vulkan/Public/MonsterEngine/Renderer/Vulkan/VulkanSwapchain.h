@@ -19,9 +19,9 @@ namespace MonsterEngine::Renderer::Vulkan
 		virtual bool begin() override;
 		virtual void end() override;
 
-		auto getDevice() const { return m_Device; }
-		auto getWindowId() const { return m_WindowId; }
-		auto getHandle() const { return m_Surface; }
+		VulkanDevice* getVulkanDevice() const;
+		auto          getWindowId() const { return m_WindowId; }
+		auto          getHandle() const { return m_Surface; }
 
 	private:
 		void         create();
@@ -29,7 +29,6 @@ namespace MonsterEngine::Renderer::Vulkan
 		virtual void destroy() override;
 
 	private:
-		VulkanDevice* m_Device;
 		std::uint32_t m_WindowId;
 
 		VkSurfaceKHR m_Surface;
