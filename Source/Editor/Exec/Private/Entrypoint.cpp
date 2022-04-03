@@ -6,12 +6,15 @@
 int main(int argc, char** argv)
 {
 	using namespace MonsterEngine;
+
+	auto logger = Logger("MonsterEditor");
+
 	auto& moduleManager = ModuleManager::ModuleManager::Get();
 	moduleManager.addSearchDir(std::filesystem::path { argv[0] }.parent_path());
 
 	auto modules = moduleManager.getAvailableModules();
 	for (auto& module : modules)
-		Logger::Trace("Found module '{}' version {}.{}.{}", module.first, module.second.m_Version.m_Major, module.second.m_Version.m_Minor, module.second.m_Version.m_Patch);
+		logger.trace("Found module '{}' version {}.{}.{}", module.first, module.second.m_Version.m_Major, module.second.m_Version.m_Minor, module.second.m_Version.m_Patch);
 
 	for (auto& module : modules)
 		moduleManager.loadModule(module.first);

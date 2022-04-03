@@ -1,4 +1,5 @@
 #include "MonsterEngine/Renderer/Vulkan/VulkanDevice.h"
+#include "MonsterEngine/Renderer/Vulkan/VulkanHelper.h"
 #include "MonsterEngine/Renderer/Vulkan/VulkanInstance.h"
 #include "MonsterEngine/Renderer/Vulkan/VulkanSwapchain.h"
 
@@ -48,8 +49,8 @@ namespace MonsterEngine::Renderer::Vulkan
 		createInfo.ppEnabledExtensionNames = nullptr;
 		createInfo.pEnabledFeatures        = &enabledFeatures;
 
-		if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create vulkan device");
+		VkCall({}, vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device),
+		       "Failed to create VkDevice");
 	}
 
 	void VulkanDevice::destroy()

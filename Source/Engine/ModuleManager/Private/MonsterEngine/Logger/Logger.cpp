@@ -3,7 +3,7 @@
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-namespace MonsterEngine::Logger
+namespace MonsterEngine
 {
 	static std::vector<spdlog::sink_ptr> s_SharedSinks;
 
@@ -26,16 +26,13 @@ namespace MonsterEngine::Logger
 		return logger;
 	}
 
-	std::shared_ptr<spdlog::logger> GetLogger(const std::string& category)
+	Logger::Logger(const std::string& category)
+	    : m_Logger(spdlog::get(category))
 	{
-		auto logger = spdlog::get(category);
-
-		if (!logger)
+		if (!m_Logger)
 		{
-			logger = CreateLogger(category);
-			spdlog::register_logger(logger);
+			m_Logger = CreateLogger(category);
+			spdlog::register_logger(m_Logger);
 		}
-
-		return logger;
 	}
-} // namespace MonsterEngine::Logger
+} // namespace MonsterEngine

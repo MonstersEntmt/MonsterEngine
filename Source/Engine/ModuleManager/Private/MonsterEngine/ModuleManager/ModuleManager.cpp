@@ -14,12 +14,6 @@
 
 namespace MonsterEngine::ModuleManager
 {
-	ModuleLoadException::ModuleLoadException(const std::string& message)
-	    : std::runtime_error(message) {}
-
-	ModuleLoadException::ModuleLoadException(std::string&& message)
-	    : std::runtime_error(std::move(message)) {}
-
 	std::int32_t ModuleManager::ModuleInfo::s_CurrentLoadOrder = 0;
 
 	ModuleManager::ModuleInfo::ModuleInfo()
@@ -38,6 +32,8 @@ namespace MonsterEngine::ModuleManager
 
 	IMonsterModule* ModuleManager::loadModule(std::string_view name)
 	{
+		auto logger = Logger("ModuleManager");
+
 		if (name == "MonsterEngine.ModuleManager")
 			return nullptr;
 		for (auto& module : m_Modules)
@@ -88,17 +84,18 @@ namespace MonsterEngine::ModuleManager
 		{
 			auto module = loadModule(dep.first);
 			if (!module || !module->getVersion().isCompatibleWith(dep.second))
-				throw ModuleLoadException("Requested module: \"" + dep.first + "\" was loaded incorrectly!");
+				logger.exception({}, "Requested module: '{}' was loaded incorrectly!", dep.first);
 		}
 
 		auto module = loadModuleAtPath(modulePath);
 		if (!module)
-			throw ModuleLoadException("Requested module: \"" + std::string(name) + "\" was loaded incorrectly!");
+			logger.exception({}, "Requested module: '{}' was loaded incorrectly!", name);
+		module->m_Name = name;
 
 		if (!ini["Version"]->tryGetValueOfType(versionArr) || versionArr.size() < 3)
 		{
 			unloadModuleFromInfo(*module);
-			throw ModuleLoadException("Invalid module: \"" + std::string(name) + "\" version missing from ini file!");
+			logger.exception({}, "Invalid module: '{}' version missing from ini file!", name);
 		}
 
 		module->m_Version = { versionArr[0], versionArr[1], versionArr[2] };
@@ -106,10 +103,10 @@ namespace MonsterEngine::ModuleManager
 		if (module->m_Version != version)
 		{
 			unloadModuleFromInfo(*module);
-			throw ModuleLoadException("Invalid module: \"" + std::string(name) + "\" ini version not the same as the built version!");
+			logger.exception({}, "Invalid module: '{}' ini version not the same as the built version!", name);
 		}
 
-		Logger::Trace("Loaded module '{}' version {}.{}.{}", name, version.m_Major, version.m_Minor, version.m_Patch);
+		logger.trace("Loaded module '{}' version {}.{}.{}", name, version.m_Major, version.m_Minor, version.m_Patch);
 		module->m_Module->startupModule();
 		return module->m_Module;
 	}
@@ -201,7 +198,10 @@ namespace MonsterEngine::ModuleManager
 		          });
 
 		for (auto module : sortedModules)
+		{
 			unloadModuleFromInfo(*module);
+			Logger("ModuleManager").trace("Unloaded module '{}'", module->m_Name);
+		}
 		m_Modules.clear();
 	}
 

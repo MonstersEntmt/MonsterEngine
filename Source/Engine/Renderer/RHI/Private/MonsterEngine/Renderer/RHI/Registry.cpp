@@ -18,7 +18,7 @@ namespace MonsterEngine::Renderer::RHI
 
 	IRHI* Registry::registerRHI(std::unique_ptr<IRHI>&& rhi)
 	{
-		Logger::Trace("Registered RHI '{}'", rhi->getName());
+		Logger("RHI").trace("Registered '{}'", rhi->getName());
 		return m_RHIs.emplace_back(std::move(rhi)).get();
 	}
 
@@ -31,7 +31,7 @@ namespace MonsterEngine::Renderer::RHI
 		                        });
 		if (itr != m_RHIs.end())
 		{
-			Logger::Trace("Unregistered RHI '{}'", rhi->getName());
+			Logger("RHI").trace("Unregistered '{}'", rhi->getName());
 			m_RHIs.erase(itr);
 		}
 	}

@@ -28,7 +28,7 @@ namespace MonsterEngine::WindowManager
 		std::uint32_t id     = newWindowID();
 		auto&         window = m_Windows.insert({ id, Window { id, width, height, std::string { title } } }).first->second;
 		window.create();
-		Logger::Trace("Created window '{}' at {}x{}", window.getTitle(), window.getWidth(), window.getHeight());
+		Logger("WindowManager").trace("Created window '{}' at {}x{}", window.getTitle(), window.getWidth(), window.getHeight());
 		return id;
 	}
 
@@ -38,7 +38,7 @@ namespace MonsterEngine::WindowManager
 		if (itr != m_Windows.end())
 		{
 			itr->second.destroy();
-			Logger::Trace("Destroyed window '{}'", itr->second.getTitle());
+			Logger("WindowManager").trace("Destroyed window '{}'", itr->second.getTitle());
 			m_Windows.erase(itr);
 		}
 	}
@@ -51,7 +51,7 @@ namespace MonsterEngine::WindowManager
 		              {
 			              if (window.second.shouldCloseWindow())
 			              {
-				              Logger::Trace("Destroyed window '{}'", window.second.getTitle());
+				              Logger("WindowManager").trace("Destroyed window '{}'", window.second.getTitle());
 				              return true;
 			              }
 			              return false;
@@ -63,7 +63,7 @@ namespace MonsterEngine::WindowManager
 	    : m_Rng(std::random_device {}())
 	{
 		if (!glfwInit())
-			throw std::runtime_error("GLFW failed to initialize!");
+			Logger("WindowManager").exception({}, "Failed to initialize!");
 	}
 
 	WindowManager::~WindowManager()

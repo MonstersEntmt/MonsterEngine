@@ -1,5 +1,6 @@
 #include "MonsterEngine/Renderer/Vulkan/VulkanInstance.h"
 #include "MonsterEngine/Renderer/Vulkan/VulkanDevice.h"
+#include "MonsterEngine/Renderer/Vulkan/VulkanHelper.h"
 
 #include <MonsterEngine/Core/ModuleVersion.h>
 #include <MonsterEngine/Logger/Logger.h>
@@ -22,10 +23,12 @@ namespace MonsterEngine::Renderer::Vulkan
 
 	std::unique_ptr<RHI::IDevice> VulkanInstance::findDevice()
 	{
+		auto logger = Logger("Vulkan");
+
 		std::uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
 		if (!deviceCount)
-			throw std::runtime_error("Found no vulkan capable physical devices!");
+			logger.exception({}, "Found no physical devices!");
 
 		std::vector<VkPhysicalDevice> physicalDevices { deviceCount };
 		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, physicalDevices.data());
@@ -35,15 +38,15 @@ namespace MonsterEngine::Renderer::Vulkan
 		{
 			VkPhysicalDeviceProperties properties = {};
 			vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-			Logger::Trace("Found vulkan physical device '{}'", properties.deviceName);
+			logger.trace("Found physical device '{}'", properties.deviceName);
 		}
 
 		if (!bestPhysicalDevice)
-			throw std::runtime_error("Failed to find an appropriate vulkan physical device!");
+			logger.exception({}, "Failed to find an appropriate physical device!");
 
 		VkPhysicalDeviceProperties bestProperties = {};
 		vkGetPhysicalDeviceProperties(bestPhysicalDevice, &bestProperties);
-		Logger::Trace("Using vulkan physical device '{}'", bestProperties.deviceName);
+		logger.trace("Using physical device '{}'", bestProperties.deviceName);
 
 		return std::make_unique<VulkanDevice>(std::string { bestProperties.deviceName }, this, bestPhysicalDevice);
 	}
@@ -71,8 +74,8 @@ namespace MonsterEngine::Renderer::Vulkan
 		createInfo.enabledExtensionCount   = 0;
 		createInfo.ppEnabledExtensionNames = nullptr;
 
-		if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create vulkan instance!");
+		VkCall({}, vkCreateInstance(&createInfo, nullptr, &m_Instance),
+		       "Failed to create VkInstance!");
 	}
 
 	void VulkanInstance::destroy()

@@ -2,6 +2,7 @@
 #include "MonsterEditor/Core/ModuleVersion.h"
 
 #include <Module.h>
+#include <MonsterEngine/Logger/Logger.h>
 #include <MonsterEngine/Renderer/RHI/ISwapchain.h>
 #include <MonsterEngine/Renderer/RHI/Registry.h>
 #include <MonsterEngine/WindowManager/WindowManager.h>
@@ -23,11 +24,13 @@ namespace MonsterEditor::Core
 	{
 		using namespace MonsterEngine;
 
+		auto logger = Logger("MonsterEditor");
+
 		auto& rhiRegistry = Renderer::RHI::Registry::Get();
 		rhiRegistry.selectRHI("Vulkan");
 		m_RHI = rhiRegistry.getSelectedRHI();
 		if (!m_RHI)
-			throw std::runtime_error("RHI 'Vulkan' could not be found!");
+			logger.exception({}, "RHI 'Vulkan' could not be found!");
 		m_RHI->init();
 
 		auto& windowManager = WindowManager::WindowManager::Get();

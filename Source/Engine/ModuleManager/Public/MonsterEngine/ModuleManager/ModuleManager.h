@@ -12,13 +12,6 @@
 
 namespace MonsterEngine::ModuleManager
 {
-	struct MonsterEngine_ModuleManager_API ModuleLoadException : public std::runtime_error
-	{
-	public:
-		ModuleLoadException(const std::string& message);
-		ModuleLoadException(std::string&& message);
-	};
-
 	class MonsterEngine_ModuleManager_API ModuleManager
 	{
 	private:
@@ -31,6 +24,7 @@ namespace MonsterEngine::ModuleManager
 			ModuleInfo();
 
 		public:
+			std::string           m_Name;
 			std::filesystem::path m_Filepath;
 			Version               m_Version  = {};
 			void*                 m_Handle   = nullptr;

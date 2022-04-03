@@ -1,5 +1,6 @@
 #include "MonsterEngine/Renderer/Vulkan/VulkanSwapchain.h"
 #include "MonsterEngine/Renderer/Vulkan/VulkanDevice.h"
+#include "MonsterEngine/Renderer/Vulkan/VulkanHelper.h"
 #include "MonsterEngine/Renderer/Vulkan/VulkanInstance.h"
 
 #include <MonsterEngine/Logger/Logger.h>
@@ -33,16 +34,11 @@ namespace MonsterEngine::Renderer::Vulkan
 	{
 		// TODO(MarcasRealAccount): Replace nullptrs with syncronizations
 		std::uint32_t imageIndex;
-		VkResult      result = vkAcquireNextImageKHR(m_Device->getHandle(), m_Swapchain, ~0ULL, nullptr, nullptr, &imageIndex);
-
-		if (result == VK_SUBOPTIMAL_KHR)
+		if (VkCall({}, vkAcquireNextImageKHR(m_Device->getHandle(), m_Swapchain, ~0ULL, nullptr, nullptr, &imageIndex),
+		           "Failed to acquire next Swapchain image for window {}", m_WindowId) == VK_SUBOPTIMAL_KHR)
 		{
 			recreate();
 			return false;
-		}
-		else if (result < VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to acquire next vulkan swapchain image!");
 		}
 
 		VkRect2D viewport { { 0, 0 }, { m_Width, m_Height } };
@@ -106,6 +102,8 @@ namespace MonsterEngine::Renderer::Vulkan
 
 		// TODO(MarcasRealAccount): Replace nullptr with a command buffer from the device
 		vkCmdBeginRendering(nullptr, &renderingInfo);
+
+		return true;
 	}
 
 	void VulkanSwapchain::end()
@@ -116,44 +114,47 @@ namespace MonsterEngine::Renderer::Vulkan
 
 	void VulkanSwapchain::create()
 	{
+		auto logger = Logger("Vulkan");
+
 		auto device         = m_Device->getHandle();
 		auto physicalDevice = m_Device->getPhysicalDevice();
 
 		auto window = WindowManager::WindowManager::Get().getWindow(m_WindowId);
 		if (!window)
-			throw std::runtime_error("Invalid window used for vulkan surface!");
+			logger.exception({}, "Invalid window {} used for Swapchain!", m_WindowId);
 
-		if (glfwCreateWindowSurface(m_Device->getInstance()->getHandle(), window->getNative(), nullptr, &m_Surface) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create vulkan surface!");
+		VkCall({}, glfwCreateWindowSurface(m_Device->getInstance()->getHandle(), window->getNative(), nullptr, &m_Surface),
+		       "Failed to create VkSurfaceKHR for window {}", m_WindowId);
 
 		VkSurfaceCapabilitiesKHR surfaceCaps {};
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, m_Surface, &surfaceCaps);
+		VkCall({}, vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, m_Surface, &surfaceCaps),
+		       "Failed to query surface capabilities for window {}", m_WindowId);
 
 		std::uint32_t formatCount = 0;
 		vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_Surface, &formatCount, nullptr);
 		if (!formatCount)
-			throw std::runtime_error("Vulkan surface doesn't support any formats!");
+			logger.exception({}, "Surface for window {} doesn't support any formats!", m_WindowId);
 
 		std::vector<VkSurfaceFormatKHR> formats { formatCount };
 		vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_Surface, &formatCount, formats.data());
 
 		m_Format = formats[0];
-		for (auto frm : formats)
-			Logger::Trace("Window {} supports format {} and colorspace {}", m_WindowId, frm.format, frm.colorSpace);
+		for (auto fmt : formats)
+			logger.trace("Window {} supports format {} and colorspace {}", m_WindowId, fmt.format, fmt.colorSpace);
 
 		std::uint32_t presentCount = 0;
 		vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_Surface, &presentCount, nullptr);
 		if (!presentCount)
-			throw std::runtime_error("Vulkan surface doesn't support any present modes!");
+			logger.exception({}, "Surface for window {} doesn't support any present modes!", m_WindowId);
 
 		std::vector<VkPresentModeKHR> presentModes { presentCount };
 		vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_Surface, &presentCount, presentModes.data());
 
 		m_PresentMode = presentModes[0];
 		for (auto presentMode : presentModes)
-			Logger::Trace("Window {} supports present mode {}", m_WindowId, presentMode);
+			logger.trace("Window {} supports present mode {}", m_WindowId, presentMode);
 
-		Logger::Trace("Window {} uses format {} and colorspace {} and present mode {}", m_WindowId, m_Format.format, m_Format.colorSpace, m_PresentMode);
+		logger.trace("Window {} uses format {} and colorspace {} and present mode {}", m_WindowId, m_Format.format, m_Format.colorSpace, m_PresentMode);
 		std::uint32_t imageCount = std::min(surfaceCaps.minImageCount + 1, surfaceCaps.maxImageCount);
 		VkExtent2D    extent     = surfaceCaps.currentExtent;
 
@@ -180,8 +181,8 @@ namespace MonsterEngine::Renderer::Vulkan
 		createInfo.clipped               = false;
 		createInfo.oldSwapchain          = nullptr;
 
-		if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create vulkan swapchain!");
+		VkCall({}, vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_Swapchain),
+		       "Failed to create VkSwapchainKHR for window {}!", m_WindowId);
 
 		vkGetSwapchainImagesKHR(device, m_Swapchain, &imageCount, nullptr);
 		m_ColorImages.resize(imageCount);
@@ -212,8 +213,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			viewCreateInfo.subresourceRange.layerCount     = 1;
 
 			VkImageView imageView;
-			if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image view!");
+			VkCall({}, vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView),
+			       "Failed to create VkImageView for window {} color image {}", m_WindowId, i);
 			m_ColorViews[i] = imageView;
 
 			VkImageCreateInfo depthStencilImageCreateInfo {};
@@ -234,8 +235,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			depthStencilImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED;
 
 			VkImage depthStencilImage;
-			if (vkCreateImage(device, &depthStencilImageCreateInfo, nullptr, &depthStencilImage) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image!");
+			VkCall({}, vkCreateImage(device, &depthStencilImageCreateInfo, nullptr, &depthStencilImage),
+			       "Failed to create VkImage for window {} depth stencil image {}", m_WindowId, i);
 			m_DepthStencilImages[i] = depthStencilImage;
 
 			viewCreateInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -254,8 +255,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			viewCreateInfo.subresourceRange.baseArrayLayer = 0;
 			viewCreateInfo.subresourceRange.layerCount     = 1;
 
-			if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image view!");
+			VkCall({}, vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView),
+			       "Failed to create VkImageView for window {} depth image {}", m_WindowId, i);
 			m_DepthViews[i] = imageView;
 
 			viewCreateInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -274,14 +275,16 @@ namespace MonsterEngine::Renderer::Vulkan
 			viewCreateInfo.subresourceRange.baseArrayLayer = 0;
 			viewCreateInfo.subresourceRange.layerCount     = 1;
 
-			if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image view!");
+			VkCall({}, vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView),
+			       "Failed to create VkImageView for window {} stencil image {}", m_WindowId, i);
 			m_StencilViews[i] = imageView;
 		}
 	}
 
 	void VulkanSwapchain::recreate()
 	{
+		auto logger = Logger("Vulkan");
+
 		auto device         = m_Device->getHandle();
 		auto physicalDevice = m_Device->getPhysicalDevice();
 
@@ -308,7 +311,7 @@ namespace MonsterEngine::Renderer::Vulkan
 		std::uint32_t formatCount = 0;
 		vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_Surface, &formatCount, nullptr);
 		if (!formatCount)
-			throw std::runtime_error("Vulkan surface doesn't support any formats!");
+			logger.exception({}, "Surface for window {} doesn't support any formats!", m_WindowId);
 
 		std::vector<VkSurfaceFormatKHR> formats { formatCount };
 		vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_Surface, &formatCount, formats.data());
@@ -316,7 +319,7 @@ namespace MonsterEngine::Renderer::Vulkan
 		std::uint32_t presentCount = 0;
 		vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_Surface, &presentCount, nullptr);
 		if (!presentCount)
-			throw std::runtime_error("Vulkan surface doesn't support any present modes!");
+			logger.exception({}, "Surface for window {} doesn't support any present modes!", m_WindowId);
 
 		std::vector<VkPresentModeKHR> presentModes { presentCount };
 		vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_Surface, &presentCount, presentModes.data());
@@ -349,8 +352,8 @@ namespace MonsterEngine::Renderer::Vulkan
 		createInfo.clipped               = false;
 		createInfo.oldSwapchain          = m_Swapchain;
 
-		if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create vulkan swapchain!");
+		VkCall({}, vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_Swapchain),
+		       "Failed to create VkSwapchainKHR for window {}!", m_WindowId);
 
 		vkGetSwapchainImagesKHR(device, m_Swapchain, &imageCount, nullptr);
 		m_ColorImages.resize(imageCount);
@@ -381,8 +384,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			viewCreateInfo.subresourceRange.layerCount     = 1;
 
 			VkImageView imageView;
-			if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image view!");
+			VkCall({}, vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView),
+			       "Failed to create VkImageView for window {} color image {}", m_WindowId, i);
 			m_ColorViews[i] = imageView;
 
 			VkImageCreateInfo depthStencilImageCreateInfo {};
@@ -403,8 +406,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			depthStencilImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED;
 
 			VkImage depthStencilImage;
-			if (vkCreateImage(device, &depthStencilImageCreateInfo, nullptr, &depthStencilImage) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image!");
+			VkCall({}, vkCreateImage(device, &depthStencilImageCreateInfo, nullptr, &depthStencilImage),
+			       "Failed to create VkImage for window {} depth stencil image {}", m_WindowId, i);
 			m_DepthStencilImages[i] = depthStencilImage;
 
 			viewCreateInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -423,8 +426,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			viewCreateInfo.subresourceRange.baseArrayLayer = 0;
 			viewCreateInfo.subresourceRange.layerCount     = 1;
 
-			if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image view!");
+			VkCall({}, vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView),
+			       "Failed to create VkImageView for window {} depth image {}", m_WindowId, i);
 			m_DepthViews[i] = imageView;
 
 			viewCreateInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -443,8 +446,8 @@ namespace MonsterEngine::Renderer::Vulkan
 			viewCreateInfo.subresourceRange.baseArrayLayer = 0;
 			viewCreateInfo.subresourceRange.layerCount     = 1;
 
-			if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create vulkan image view!");
+			VkCall({}, vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView),
+			       "Failed to create VkImageView for window {} stencil image {}", m_WindowId, i);
 			m_StencilViews[i] = imageView;
 		}
 	}

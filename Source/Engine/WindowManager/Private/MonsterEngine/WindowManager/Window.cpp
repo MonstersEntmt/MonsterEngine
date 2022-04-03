@@ -1,5 +1,6 @@
 #include "MonsterEngine/WindowManager/Window.h"
 
+#include <MonsterEngine/Logger/Logger.h>
 #include <MonsterEngine/Renderer/RHI/IDevice.h>
 #include <MonsterEngine/Renderer/RHI/IRHI.h>
 #include <MonsterEngine/Renderer/RHI/Registry.h>
@@ -22,15 +23,17 @@ namespace MonsterEngine::WindowManager
 		if (m_Native)
 			return;
 
+		auto logger = Logger("WindowManager");
+
 		auto rhi = Renderer::RHI::Registry::Get().getSelectedRHI();
 		if (!rhi)
-			throw std::runtime_error("No RHI was selected prior to window creation!");
+			logger.exception({}, "No RHI was selected prior to window creation!");
 		glfwDefaultWindowHints();
 		rhi->setGLFWOptions(*this);
 
 		m_Native = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
 		if (!m_Native)
-			throw std::runtime_error("GLFW failed to create window!");
+			logger.exception({}, "Failed to create window '{}'!", m_Title);
 
 		m_Swapchain = rhi->getMainDevice()->newSwapchain(*this);
 	}

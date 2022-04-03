@@ -19,7 +19,7 @@ namespace MonsterEngine::Renderer::OpenGL
 	{
 		std::string vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
 		std::string renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-		Logger::Trace("Found OpenGL device '{} {}'", vendor, renderer);
+		Logger("OpenGL").trace("Uses device '{} {}'", vendor, renderer);
 		return std::make_unique<OpenGLDevice>("Device " + vendor + ' ' + renderer, this);
 	}
 } // namespace MonsterEngine::Renderer::OpenGL
